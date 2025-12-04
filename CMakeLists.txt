@@ -37,12 +37,15 @@ endif()
 set(SOURCES
     main.c
     cache_naive_helpers.c
-    cache_oblivious_helpers.c
 )
 # -----------------------------------------
 # Executable target
 # -----------------------------------------
-add_executable(image_compressor ${SOURCES})
+add_executable(image_compressor
+    main.c
+    cache_naive_helpers.c
+)
+target_link_libraries(image_compressor m)
 # No libs needed for stb_image (header-only)
 target_include_directories(image_compressor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 # -----------------------------------------
