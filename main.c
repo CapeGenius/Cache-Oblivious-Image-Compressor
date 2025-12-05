@@ -1,3 +1,6 @@
+// THIS ALL NEEDS TO BE REFACTORED TO OUR PROJECT 
+// STRUCTURE SCOPED IN OUR PROPOSAL FORM
+
 // main.c
 # include <stdio.h> // i/o
 # include <stdlib.h> // standard library
