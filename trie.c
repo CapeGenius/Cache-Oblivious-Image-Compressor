@@ -1,7 +1,8 @@
 # include <stdio.h> // i/o
 # include <stdlib.h>
+#include <string.h>
 
-
+// C Standard Library - https://www.programiz.com/c-programming/library-function/string.h/strlen
 // geeks for geeks: https://www.geeksforgeeks.org/c/implementation-of-trie-prefix-tree-in-c/
 // Compact Data Structures by Navarro
 
@@ -13,6 +14,13 @@ typedef struct TrieNode {
     Node *parent;
     Node *children[CHILDREN_SIZE];
 } Node; 
+
+// search result struct --> tells whether the byte stream exists along w the node 
+typedef struct SearchResult {
+    Node *searched_node;
+    short int child_exists;
+    unsigned char search_byte;
+} Result;
 
 // create the root node
 Node* make_root() {
@@ -45,10 +53,31 @@ Node* create_node(unsigned char character, Node* parent_node, short int phrase_n
 }
 
 // initially thought of recursively inserting nodes --> search for nodes and add nodes for LZ78
-void insert_node(char byte, Node* node, int phrase_number) {
-    int child_exists = 0;
+void insert_node(unsigned char byte, Node* node, int phrase_number) {
 
     if (node->children[byte] == NULL) {
         Node* child_node = create_node(byte, node, phrase_number);
     }
+}
+
+// created search trie solution
+Result* search_trie(unsigned char* byte_stream, Node* root) {
+    Result search_result = {.searched_node = NULL, .child_exists = 1, .search_byte = NULL};
+
+    Node* current_node = root;
+    for (int i = 0; i < strlen(byte_stream); ++i) {
+        if (current_node->children[byte_stream[i]] != NULL ) {
+            current_node = current_node->children[byte_stream[i]];
+        }
+        else {
+            search_result.searched_node = current_node;
+            search_result.child_exists = 0; 
+            search_result.search_byte = byte_stream[i];
+            return &search_result;
+        }
+    }
+
+    search_result.child_exists = 1; 
+
+    return &search_result;
 }
