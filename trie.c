@@ -2,6 +2,9 @@
 # include <stdlib.h>
 
 
+// geeks for geeks: https://www.geeksforgeeks.org/c/implementation-of-trie-prefix-tree-in-c/
+// Compact Data Structures by Navarro
+
 const int CHILDREN_SIZE = 256;
 // created a trie node 
 typedef struct TrieNode {
@@ -41,10 +44,11 @@ Node* create_node(unsigned char character, Node* parent_node, short int phrase_n
     return node;
 }
 
-void insert_node(unsigned char char_byte, Node* node, int phrase_number) {
-    int child_exists = 0; 
-    
-    if (node->children[char_byte] == NULL) {
-        Node* child_node = create_node(char_byte, node, phrase_number);
+// initially thought of recursively inserting nodes --> search for nodes and add nodes for LZ78
+void insert_node(char byte, Node* node, int phrase_number) {
+    int child_exists = 0;
+
+    if (node->children[byte] == NULL) {
+        Node* child_node = create_node(byte, node, phrase_number);
     }
 }
