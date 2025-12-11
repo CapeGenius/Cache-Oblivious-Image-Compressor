@@ -9,7 +9,7 @@
 const int CHILDREN_SIZE = 256;
 // created a trie node 
 typedef struct TrieNode {
-    unsigned char char_byte;
+    char char_byte;
     short int phrase_number; 
     Node *parent;
     Node *children[CHILDREN_SIZE];
@@ -19,7 +19,7 @@ typedef struct TrieNode {
 typedef struct SearchResult {
     Node *searched_node;
     short int child_exists;
-    unsigned char search_byte;
+    char search_byte;
 } Result;
 
 // create the root node
@@ -38,7 +38,7 @@ Node* make_root() {
 }
 
 // creates a node w/ character, parent node, and phrase number
-Node* create_node(unsigned char character, Node* parent_node, short int phrase_number) {
+Node* create_node(const char character, Node* parent_node, short int phrase_number) {
     Node *node = (Node *)malloc(sizeof(Node));
     node->char_byte = character;
     node->parent = parent_node;
@@ -53,7 +53,7 @@ Node* create_node(unsigned char character, Node* parent_node, short int phrase_n
 }
 
 // initially thought of recursively inserting nodes --> search for nodes and add nodes for LZ78
-void insert_node(unsigned char byte, Node* node, int phrase_number) {
+void insert_node(const char byte, Node* node, int phrase_number) {
 
     if (node->children[byte] == NULL) {
         Node* child_node = create_node(byte, node, phrase_number);
@@ -61,7 +61,7 @@ void insert_node(unsigned char byte, Node* node, int phrase_number) {
 }
 
 // created search trie solution
-Result* search_trie(unsigned char* byte_stream, Node* root) {
+Result* search_trie(const char* byte_stream, Node* root) {
     Result search_result = {.searched_node = NULL, .child_exists = 1, .search_byte = NULL};
 
     Node* current_node = root;
