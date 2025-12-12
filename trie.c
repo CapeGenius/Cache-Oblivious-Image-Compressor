@@ -112,9 +112,9 @@ int create_trie() {
      
     // created image data using stb_image.h to find parameters for loading image
     unsigned char* image_data = stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
-    
 
     Node* root_node = make_root();
+    image_compression(image_data, root_node);
     
     // create image --> used stb_image.h documentation to find parameters for loading image
     return 0;
