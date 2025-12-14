@@ -90,7 +90,32 @@ Result* search_trie(unsigned char* byte_stream, Node* root) {
 
 void image_compression(unsigned char* image_data, Node* root_node) {
     int phrase_number = 0;
+    int start_index = 0;
+    int end_index = 0;
 
+    while (end_index < strlen(image_data)) {
+        Result* search_result;
+        search_result->search_byte=NULL;
+        search_result->searched_node=NULL;
+        search_result->child_exists=NULL;
+
+        // https://stackoverflow.com/questions/8600181/allocate-memory-and-save-string-in-c
+        if (start_index == end_index){
+            // allocate memory for the byte stream and copy character to bytestream
+            char* byte_stream = (char* )malloc(sizeof(char));
+            byte_stream = strcpy(byte_stream, byte_stream[start_index]);
+            
+            // search result from searching th etrie
+            search_result = search_trie(byte_stream, root_node);
+
+            free(byte_stream);
+        }
+        // https://stackoverflow.com/questions/6205195/given-a-starting-and-ending-indices-how-can-i-copy-part-of-a-string-in-c
+        else if (end_index > start_index) {
+
+            strcnpy();
+        }
+    }
     /*
     general algorithm:
         - start at phrase number 0, index 0, end index 
