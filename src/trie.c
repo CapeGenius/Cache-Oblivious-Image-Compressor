@@ -32,15 +32,19 @@ typedef struct SearchResult {
 
 // create the root node
 Node* make_root() {
-    Node *root_node=malloc(sizeof(Node));
-    root_node->char_byte = "\0";
+    printf("size of root node is %zu \n", sizeof(Node*));
+    puts("made root");
+    Node* root_node = (Node *)malloc(sizeof(Node));
+    puts("made pointer");
+    root_node->char_byte = (unsigned char)"";
     root_node->phrase_number = 0;
-    root_node->parent = NULL;
 
     for (int i = 0; i < CHILDREN_SIZE; i++)
     {
-        root_node->children[i] = NULL;
+        root_node->children[i] = (Node *)malloc(sizeof(Node));
     }
+
+    puts("made children");
 
     return root_node;
 }
@@ -73,7 +77,7 @@ Result* search_trie(unsigned char* byte_stream, Node* root) {
     Result search_result = {.searched_node = NULL, .child_exists = 1, .search_byte = NULL};
 
     Node* current_node = root;
-    for (int i = 0; i < strlen(byte_stream); ++i) {
+    for (int i = 0; i < strlen((const char* )byte_stream); ++i) {
         if (current_node->children[byte_stream[i]] != NULL ) {
             current_node = current_node->children[byte_stream[i]];
         }
@@ -96,10 +100,10 @@ void image_compression(unsigned char* image_data, Node* root_node) {
     int end_index = 0;
 
 
-    while (end_index < strlen(image_data)) {
+    while (end_index < strlen((const char* )image_data)) {
         Result* search_result;
-        search_result->search_byte=NULL;
-        search_result->searched_node=NULL;
+        search_result->search_byte="";
+        search_result->searched_node="";
         search_result->child_exists=NULL;
         unsigned char* byte_stream = NULL;
 
@@ -158,16 +162,25 @@ void image_compression(unsigned char* image_data, Node* root_node) {
 // https://solarianprogrammer.com/2019/06/10/c-programming-reading-writing-images-stb_image-libraries/
 int create_trie() {
     // load the new image
-    char* image_name = "rohan.jpg";
-    int x_width = NULL;
-    int y_height = NULL;
-    int channel_num = NULL;
+    char* image_name = "/home/rohanbendapudi/Cache-Oblivious-Image-Compressor/src/static/rohan.jpg";
+    int x_width = 0;
+    int y_height = 0;
+    int channel_num = 0;
+    Node* root_node;
      
     // created image data using stb_image.h to find parameters for loading image
     unsigned char* image_data = stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
 
-    Node* root_node = make_root();
-    image_compression(image_data, root_node);
+    if (image_data != NULL) {
+        puts("Hello");
+        root_node = make_root();
+        puts('initialized root');
+        // printf("size of image %zu", strlen((char*)image_data));
+        // image_compression(image_data, root_node);
+    }
+    else {
+        puts("Hello");
+    }
     
     // create image --> used stb_image.h documentation to find parameters for loading image
     return 0;
