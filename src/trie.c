@@ -59,7 +59,7 @@ Node* create_node(unsigned char character, Node* parent_node, short int phrase_n
 
     for (int i = 0; i < CHILDREN_SIZE; i++)
     {
-        node->children[i] = (Node *)malloc(sizeof(Node));
+        node->children[i] = NULL;
     }
 
     return node;
@@ -75,10 +75,14 @@ void insert_node(unsigned char byte, Node* node, int phrase_number) {
 
 // created search trie solution
 Result* search_trie(unsigned char* byte_stream, Node* root) {
-    Result search_result = {.searched_node = NULL, .child_exists = 1, .search_byte = NULL};
+    Result search_result = {.searched_node = (Node* )malloc(sizeof(Node)), .child_exists = 1, .search_byte = NULL};
 
-    Node* current_node = root;
+    puts("currently searching");
+
+    Node* current_node = (Node*) malloc(sizeof(Node));
+    current_node = root;
     for (int i = 0; i < strlen((const char* )byte_stream); ++i) {
+        puts("starting search");
         if (current_node->children[byte_stream[i]] != NULL ) {
             current_node = current_node->children[byte_stream[i]];
         }
@@ -86,6 +90,7 @@ Result* search_trie(unsigned char* byte_stream, Node* root) {
             search_result.searched_node = current_node;
             search_result.child_exists = 0; 
             search_result.search_byte = byte_stream[i];
+            puts("found a node");
             return &search_result;
         }
     }
@@ -106,30 +111,45 @@ void image_compression(unsigned char* image_data, Node* root_node) {
         Result* search_result = (Result*)malloc(sizeof(Result));
         puts("here is search result");
         search_result->search_byte=0;
-        search_result->searched_node="";
+        search_result->searched_node=(Node* ) malloc(sizeof(Node));
         search_result->child_exists=0;
-        unsigned char* byte_stream = NULL;
-
-        puts("search result again");
+        puts("search result again \n");
 
         // copy string differently based on the size of the string
         // https://stackoverflow.com/questions/8600181/allocate-memory-and-save-string-in-c
         if (start_index == end_index){
-            // allocate memory for the byte stream and copy character to bytestream
-            puts("in first case");
-            byte_stream = (unsigned char* )malloc(sizeof(char));
-            byte_stream = strcpy(byte_stream, byte_stream[start_index]);
-            printf("bytestream %s", byte_stream);
-            // search result from searching th etrie
+
+            unsigned char * byte_stream = (unsigned char*) malloc(2*sizeof(unsigned char));
+            puts("memory allocated");
+            strncpy(byte_stream, image_data+start_index, 1);
+            byte_stream[1] = '\0';
+            // search result from searching the trie
             search_result = search_trie(byte_stream, root_node);
+
+            puts("what's up");
+
+            // add a new node if a child is needed to add
+            if (search_result->child_exists == 0) {
+                insert_node(byte_stream, search_result->searched_node, phrase_number);
+                
+                ++phrase_number;
+                start_index = end_index + 1;
+                end_index = end_index + 1;
+            }
+            else {
+                end_index = end_index + 1;
+            }
+            free(byte_stream);
         }
+
+
         // https://cplusplus.com/reference/cstring/strncpy/
         // https://forums.raspberrypi.com/viewtopic.php?t=299281
         // https://stackoverflow.com/questions/6205195/given-a-starting-and-ending-indices-how-can-i-copy-part-of-a-string-in-c
         else if (end_index > start_index) {
             // determine length of substring and then allocate memory for that string
             int string_size = end_index-start_index;
-            byte_stream = (unsigned char* )malloc((string_size+1)*sizeof(unsigned char));
+            unsigned char* byte_stream = (unsigned char* )malloc((string_size+1)*sizeof(unsigned char));
             
             // copy new substring into bytestream
             strncpy(byte_stream, image_data+start_index, string_size);
@@ -137,21 +157,23 @@ void image_compression(unsigned char* image_data, Node* root_node) {
 
             // find the search result based on the bytestream
             search_result = search_trie(byte_stream, root_node);
+
+            // add a new node if a child is needed to add
+            if (search_result->child_exists == 0) {
+                insert_node(byte_stream, search_result->searched_node, phrase_number);
+                
+                ++phrase_number;
+                start_index = end_index + 1;
+                end_index = end_index + 1;
+            }
+            else {
+                end_index = end_index + 1;
+            }
+
+            free(byte_stream);
         }
 
-        // add a new node if a child is needed to add
-        if (search_result->child_exists == 0) {
-            insert_node(byte_stream, search_result->searched_node, phrase_number);
-            
-            ++phrase_number;
-            start_index = end_index + 1;
-            end_index = end_index + 1;
-        }
-        else {
-            end_index = end_index + 1;
-        }
-
-        free(byte_stream);
+        free(search_result);
 
     }
     /*
