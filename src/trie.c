@@ -36,8 +36,9 @@ Node* make_root() {
     puts("made root");
     Node* root_node = (Node *)malloc(sizeof(Node));
     puts("made pointer");
-    root_node->char_byte = (unsigned char)"";
+    root_node->char_byte = 0;
     root_node->phrase_number = 0;
+    root_node->parent = NULL;
 
     for (int i = 0; i < CHILDREN_SIZE; i++)
     {
@@ -58,7 +59,7 @@ Node* create_node(unsigned char character, Node* parent_node, short int phrase_n
 
     for (int i = 0; i < CHILDREN_SIZE; i++)
     {
-        node->children[i] = NULL;
+        node->children[i] = (Node *)malloc(sizeof(Node));
     }
 
     return node;
@@ -99,21 +100,26 @@ void image_compression(unsigned char* image_data, Node* root_node) {
     int start_index = 0;
     int end_index = 0;
 
+    puts("welcome to image compression \n");
 
-    while (end_index < strlen((const char* )image_data)) {
-        Result* search_result;
-        search_result->search_byte="";
+    while (end_index < strlen((char* )image_data)) {
+        Result* search_result = (Result*)malloc(sizeof(Result));
+        puts("here is search result");
+        search_result->search_byte=0;
         search_result->searched_node="";
-        search_result->child_exists=NULL;
+        search_result->child_exists=0;
         unsigned char* byte_stream = NULL;
+
+        puts("search result again");
 
         // copy string differently based on the size of the string
         // https://stackoverflow.com/questions/8600181/allocate-memory-and-save-string-in-c
         if (start_index == end_index){
             // allocate memory for the byte stream and copy character to bytestream
-            byte_stream = (unsigned char* )malloc(sizeof(unsigned char));
+            puts("in first case");
+            byte_stream = (unsigned char* )malloc(sizeof(char));
             byte_stream = strcpy(byte_stream, byte_stream[start_index]);
-            
+            printf("bytestream %s", byte_stream);
             // search result from searching th etrie
             search_result = search_trie(byte_stream, root_node);
         }
@@ -159,6 +165,7 @@ void image_compression(unsigned char* image_data, Node* root_node) {
 }
 
 
+// https://stackoverflow.com/questions/14067403/valgrind-invalid-read-of-size-1
 // https://solarianprogrammer.com/2019/06/10/c-programming-reading-writing-images-stb_image-libraries/
 int create_trie() {
     // load the new image
@@ -166,17 +173,18 @@ int create_trie() {
     int x_width = 0;
     int y_height = 0;
     int channel_num = 0;
-    Node* root_node;
+    Node* root_node_ptr = create_node((unsigned char )0, NULL, 0);
      
     // created image data using stb_image.h to find parameters for loading image
     unsigned char* image_data = stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
 
+    printf("size of image %zu \n", strlen((char*)image_data));
+
     if (image_data != NULL) {
         puts("Hello");
-        root_node = make_root();
-        puts('initialized root');
-        // printf("size of image %zu", strlen((char*)image_data));
-        // image_compression(image_data, root_node);
+
+        printf("size of image %zu", strlen((char*)image_data));
+        image_compression(image_data, root_node_ptr);
     }
     else {
         puts("Hello");
