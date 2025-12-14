@@ -171,6 +171,10 @@ int create_trie() {
     return 0;
 }
 
+int main() {
+    create_trie();
+}
+
 // used this to use stbi_load STBIDEF stbi_uc *stbi_load            
 //(char const *filename, int *x, int *y, int *channels_in_file, int desired_channels);
 //// Basic usage (see HDR discussion below for HDR usage):
