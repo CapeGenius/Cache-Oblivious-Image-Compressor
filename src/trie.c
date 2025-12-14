@@ -12,14 +12,16 @@
 // https://pubs.opengroup.org/onlinepubs/007904975/basedefs/stdint.h.html --> need to look into for uint_t
 // https://github.com/nothings/stb/blob/master/stb_image.h
 
-const int CHILDREN_SIZE = 256;
+#define CHILDREN_SIZE 256
 // created a trie node 
-typedef struct TrieNode {
+struct TrieNode {
     unsigned char char_byte;
     short int phrase_number; 
-    Node *parent;
-    Node *children[CHILDREN_SIZE];
-} Node; 
+    struct TrieNode *parent;
+    struct TrieNode *children[CHILDREN_SIZE];
+}; 
+
+typedef struct TrieNode Node;
 
 // search result struct --> tells whether the byte stream exists along w the node 
 typedef struct SearchResult {
@@ -62,7 +64,7 @@ Node* create_node(unsigned char character, Node* parent_node, short int phrase_n
 void insert_node(unsigned char byte, Node* node, int phrase_number) {
 
     if (node->children[byte] == NULL) {
-        Node* child_node = create_node(byte, node, phrase_number);
+        create_node(byte, node, phrase_number);
     }
 }
 
@@ -99,13 +101,13 @@ void image_compression(unsigned char* image_data, Node* root_node) {
         search_result->search_byte=NULL;
         search_result->searched_node=NULL;
         search_result->child_exists=NULL;
-        char* byte_stream = NULL;
+        unsigned char* byte_stream = NULL;
 
         // copy string differently based on the size of the string
         // https://stackoverflow.com/questions/8600181/allocate-memory-and-save-string-in-c
         if (start_index == end_index){
             // allocate memory for the byte stream and copy character to bytestream
-            byte_stream = (char* )malloc(sizeof(char));
+            byte_stream = (unsigned char* )malloc(sizeof(unsigned char));
             byte_stream = strcpy(byte_stream, byte_stream[start_index]);
             
             // search result from searching th etrie
@@ -117,10 +119,10 @@ void image_compression(unsigned char* image_data, Node* root_node) {
         else if (end_index > start_index) {
             // determine length of substring and then allocate memory for that string
             int string_size = end_index-start_index;
-            byte_stream = (char* )malloc((string_size+1)*sizeof(char));
+            byte_stream = (unsigned char* )malloc((string_size+1)*sizeof(unsigned char));
             
             // copy new substring into bytestream
-            strcnpy(byte_stream, image_data+start_index, string_size);
+            strncpy(byte_stream, image_data+start_index, string_size);
             byte_stream[string_size]="\0";
 
             // find the search result based on the bytestream
@@ -157,9 +159,9 @@ void image_compression(unsigned char* image_data, Node* root_node) {
 int create_trie() {
     // load the new image
     char* image_name = "rohan.jpg";
-    int x_width;
-    int y_height;
-    int channel_num;
+    int x_width = NULL;
+    int y_height = NULL;
+    int channel_num = NULL;
      
     // created image data using stb_image.h to find parameters for loading image
     unsigned char* image_data = stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
