@@ -15,7 +15,7 @@
 #define CHILDREN_SIZE 256
 // created a trie node 
 struct TrieNode {
-    unsigned char char_byte;
+    u_int8_t byte;
     short int phrase_number; 
     struct TrieNode *parent;
     struct TrieNode *children[CHILDREN_SIZE];
@@ -30,30 +30,10 @@ typedef struct SearchResult {
     unsigned char search_byte;
 } Result;
 
-// create the root node
-Node* make_root() {
-    printf("size of root node is %zu \n", sizeof(Node*));
-    puts("made root");
-    Node* root_node = (Node *)malloc(sizeof(Node));
-    puts("made pointer");
-    root_node->char_byte = 0;
-    root_node->phrase_number = 0;
-    root_node->parent = NULL;
-
-    for (int i = 0; i < CHILDREN_SIZE; i++)
-    {
-        root_node->children[i] = (Node *)malloc(sizeof(Node));
-    }
-
-    puts("made children");
-
-    return root_node;
-}
-
 // creates a node w/ character, parent node, and phrase number
 Node* create_node(unsigned char character, Node* parent_node, short int phrase_number) {
     Node *node = (Node *)malloc(sizeof(Node));
-    node->char_byte = character;
+    node->byte = character;
     node->parent = parent_node;
     node->phrase_number = phrase_number;
 
