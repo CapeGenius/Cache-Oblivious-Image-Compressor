@@ -93,28 +93,54 @@ void image_compression(unsigned char* image_data, Node* root_node) {
     int start_index = 0;
     int end_index = 0;
 
+
     while (end_index < strlen(image_data)) {
         Result* search_result;
         search_result->search_byte=NULL;
         search_result->searched_node=NULL;
         search_result->child_exists=NULL;
+        char* byte_stream = NULL;
 
+        // copy string differently based on the size of the string
         // https://stackoverflow.com/questions/8600181/allocate-memory-and-save-string-in-c
         if (start_index == end_index){
             // allocate memory for the byte stream and copy character to bytestream
-            char* byte_stream = (char* )malloc(sizeof(char));
+            byte_stream = (char* )malloc(sizeof(char));
             byte_stream = strcpy(byte_stream, byte_stream[start_index]);
             
             // search result from searching th etrie
             search_result = search_trie(byte_stream, root_node);
-
-            free(byte_stream);
         }
+        // https://cplusplus.com/reference/cstring/strncpy/
+        // https://forums.raspberrypi.com/viewtopic.php?t=299281
         // https://stackoverflow.com/questions/6205195/given-a-starting-and-ending-indices-how-can-i-copy-part-of-a-string-in-c
         else if (end_index > start_index) {
+            // determine length of substring and then allocate memory for that string
+            int string_size = end_index-start_index;
+            byte_stream = (char* )malloc((string_size+1)*sizeof(char));
+            
+            // copy new substring into bytestream
+            strcnpy(byte_stream, image_data+start_index, string_size);
+            byte_stream[string_size]="\0";
 
-            strcnpy();
+            // find the search result based on the bytestream
+            search_result = search_trie(byte_stream, root_node);
         }
+
+        // add a new node if a child is needed to add
+        if (search_result->child_exists == 0) {
+            insert_node(byte_stream, search_result->searched_node, phrase_number);
+            
+            ++phrase_number;
+            start_index = end_index + 1;
+            end_index = end_index + 1;
+        }
+        else {
+            end_index = end_index + 1;
+        }
+
+        free(byte_stream);
+
     }
     /*
     general algorithm:
