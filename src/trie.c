@@ -80,6 +80,7 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
         strncpy(byte_stream, image_data+start_index, string_size);
         search_trie(byte_stream, root_node, search_result, string_size);
 
+        // if a child doesn't exist in the search spot --> add new child node
         if (search_result->child_exists == 0) {
             insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
             
@@ -87,73 +88,14 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
             start_index = end_index + 1;
             end_index = end_index + 1;
         }
-        else {
+        else { // if child already exists, go deeper in the node
             // puts("went here instead \n");
             end_index = end_index + 1;
         }
-        free(byte_stream);
         
-        // copy string differently based on the size of the string
-        // https://stackoverflow.com/questions/8600181/allocate-memory-and-save-string-in-c
-        // if (start_index == end_index){
-
-        //     unsigned char * byte_stream = (unsigned char*) malloc(2*sizeof(unsigned char));
-        //     // puts("memory allocated");
-        //     strncpy(byte_stream, image_data+start_index, 1);
-        //     byte_stream[1] = '\0';
-        //     // search result from searching the trie;
-        //     search_trie(byte_stream, root_node, search_result, 1);
-            
-
-        //     // puts("what's up");
-
-        //     // add a new node if a child is needed to add
-        //     if (search_result->child_exists == 0) {
-        //         insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
-                
-        //         ++phrase_number;
-        //         start_index = end_index + 1;
-        //         end_index = end_index + 1;
-        //     }
-        //     else {
-        //         // puts("went here instead \n");
-        //         end_index = end_index + 1;
-        //     }
-        //     free(byte_stream);
-        // }
-
-
-        // // https://cplusplus.com/reference/cstring/strncpy/
-        // // https://forums.raspberrypi.com/viewtopic.php?t=299281
-        // // https://stackoverflow.com/questions/6205195/given-a-starting-and-ending-indices-how-can-i-copy-part-of-a-string-in-c
-        // else if (end_index > start_index) {
-        //     // determine length of substring and then allocate memory for that string
-        //     int string_size = end_index-start_index;
-        //     unsigned char* byte_stream = (unsigned char* )malloc((string_size+1)*sizeof(unsigned char));
-        //     // copy new substring into bytestream
-        //     strncpy(byte_stream, image_data+start_index, string_size);
-        //     byte_stream[string_size]="\0";
-
-        //     // find the search result based on the bytestream
-        //     search_trie(byte_stream, root_node, search_result, string_size);
-
-        //     // add a new node if a child is needed to add
-        //     if (search_result->child_exists == 0) {
-        //         insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
-
-        //         ++phrase_number;
-        //         start_index = end_index + 1;
-        //         end_index = end_index + 1;
-        //     }
-        //     else {
-
-        //         end_index = end_index + 1;
-        //     }
-
-        //     free(byte_stream);
-        // }
+        // free memory
+        free(byte_stream);
         free(search_result);
-
     }
 
 }
