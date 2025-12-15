@@ -52,13 +52,13 @@ void insert_node(unsigned char byte, Node* node, int phrase_number) {
 }
 
 // created search trie solution
-void search_trie(unsigned char* byte_stream, Node* root, Result* search_result) {
+void search_trie(unsigned char* byte_stream, Node* root, Result* search_result, int string_size) {
     search_result->search_byte=0;
     search_result->child_exists=1;
 
 
     Node* current_node = root; 
-    for (int i = 0; i < strlen((const char* )byte_stream); ++i) {
+    for (int i = 0; i < string_size; ++i) {
         // printf("current byte is: %u \n",byte_stream[i]);
         // printf("the child: %p \n", current_node->children[byte_stream[i]]);
         if (current_node->children[byte_stream[i]] != NULL ) {
@@ -102,7 +102,7 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
             // printf("byte stream is %s \n", byte_stream);
             // search result from searching the trie
             // printf("the pointer is %p \n", (void *)root_node);
-            search_trie(byte_stream, root_node, search_result);
+            search_trie(byte_stream, root_node, search_result, 1);
             
 
             // puts("what's up");
@@ -135,7 +135,7 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
             byte_stream[string_size]="\0";
 
             // find the search result based on the bytestream
-            search_trie(byte_stream, root_node, search_result);
+            search_trie(byte_stream, root_node, search_result, string_size);
 
             // add a new node if a child is needed to add
             if (search_result->child_exists == 0) {
@@ -195,10 +195,9 @@ int create_trie() {
     unsigned char* image_data = (unsigned char*) stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
     // unsigned char* image_data="hellllo";
     // printf("image is %s \n", image_data);
-    size_t image_size = strlen(image_data);
 
     printf("size of image %zu \n", (size_t)(sizeof(image_data)/sizeof(u_int8_t)));
-    // size_t image_size = (size_t) x_width*y_height*channel_num;
+    size_t image_size = (size_t) x_width*y_height*channel_num;
     // printf("The size of the image is %zu", image_size);
 
     if (image_data != NULL) {
