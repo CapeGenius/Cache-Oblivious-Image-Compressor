@@ -47,7 +47,7 @@ Node* create_node(unsigned char character, Node* parent_node, short int phrase_n
 
 // initially thought of recursively inserting nodes --> search for nodes and add nodes for LZ78
 void insert_node(unsigned char byte, Node* node, int phrase_number) {
-    printf("pointer to byte is %p \n", node->children[byte]);
+    // printf("pointer to byte is %p \n", node->children[byte]);
     node->children[(int)byte] = create_node(byte, node, phrase_number);
 }
 
@@ -60,8 +60,8 @@ Result* search_trie(unsigned char* byte_stream, Node* root) {
 
     Node* current_node = root; 
     for (int i = 0; i < strlen((const char* )byte_stream); ++i) {
-        printf("current byte is: %u \n",byte_stream[i]);
-        printf("the child: %p", current_node->children[byte_stream[i]]);
+        // printf("current byte is: %u \n",byte_stream[i]);
+        // printf("the child: %p \n", current_node->children[byte_stream[i]]);
         if (current_node->children[byte_stream[i]] != NULL ) {
             current_node = current_node->children[byte_stream[i]];
         }
@@ -69,7 +69,7 @@ Result* search_trie(unsigned char* byte_stream, Node* root) {
             search_result->searched_node = current_node;
             search_result->child_exists = 0; 
             search_result->search_byte = byte_stream[i];
-            puts("found a node");
+            // puts("found a node");
             return search_result;
         }
     }
@@ -86,9 +86,9 @@ void image_compression(unsigned char* image_data, Node* root_node) {
 
     puts("welcome to image compression \n");
 
-    while (end_index < strlen((char* )image_data)) {
-        printf("phrase number: %d \n", phrase_number);
-        printf("start index: %d \n", start_index);
+    while (end_index < strlen(image_data)) {
+        // printf("phrase number: %d \n", phrase_number);
+        // printf("end index: %d \n, image size:%zu \n", end_index, strlen(image_data));
         Result* search_result = (Result*)malloc(sizeof(Result));
         search_result->search_byte=0;
         search_result->searched_node=(Node* ) malloc(sizeof(Node));
@@ -102,22 +102,24 @@ void image_compression(unsigned char* image_data, Node* root_node) {
             // puts("memory allocated");
             strncpy(byte_stream, image_data+start_index, 1);
             byte_stream[1] = '\0';
+            // printf("byte stream is %s \n", byte_stream);
             // search result from searching the trie
-            printf("the pointer is %p \n", (void *)root_node);
+            // printf("the pointer is %p \n", (void *)root_node);
             search_result = search_trie(byte_stream, root_node);
+            
 
             // puts("what's up");
 
             // add a new node if a child is needed to add
             if (search_result->child_exists == 0) {
-                insert_node(byte_stream, search_result->searched_node, phrase_number);
+                insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
                 
                 ++phrase_number;
                 start_index = end_index + 1;
                 end_index = end_index + 1;
             }
             else {
-                puts("went here instead \n");
+                // puts("went here instead \n");
                 end_index = end_index + 1;
             }
             free(byte_stream);
@@ -131,7 +133,6 @@ void image_compression(unsigned char* image_data, Node* root_node) {
             // determine length of substring and then allocate memory for that string
             int string_size = end_index-start_index;
             unsigned char* byte_stream = (unsigned char* )malloc((string_size+1)*sizeof(unsigned char));
-            
             // copy new substring into bytestream
             strncpy(byte_stream, image_data+start_index, string_size);
             byte_stream[string_size]="\0";
@@ -141,19 +142,21 @@ void image_compression(unsigned char* image_data, Node* root_node) {
 
             // add a new node if a child is needed to add
             if (search_result->child_exists == 0) {
-                insert_node(byte_stream, search_result->searched_node, phrase_number);
+                insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
+                printf("the string size %d \n", string_size);
                 
                 ++phrase_number;
                 start_index = end_index + 1;
                 end_index = end_index + 1;
             }
             else {
+
                 end_index = end_index + 1;
             }
 
             free(byte_stream);
         }
-        puts("---------------------------------------------------------------");
+        // puts("---------------------------------------------------------------");
         free(search_result);
 
     }
@@ -172,22 +175,23 @@ void image_compression(unsigned char* image_data, Node* root_node) {
 // https://solarianprogrammer.com/2019/06/10/c-programming-reading-writing-images-stb_image-libraries/
 int create_trie() {
     // load the new image
-    char* image_name = "/home/rohanbendapudi/Cache-Oblivious-Image-Compressor/src/static/rohan.jpg";
-    int x_width = 0;
-    int y_height = 0;
-    int channel_num = 0;
+    char* image_name = "/home/rohanbendapudi/Cache-Oblivious-Image-Compressor/src/static/cat_image.jpg";
+    int x_width;
+    int y_height;
+    int channel_num;
     Node* root_node_ptr = create_node((unsigned char )0, NULL, 0);
      
     // created image data using stb_image.h to find parameters for loading image
-    // unsigned char* image_data = stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
-    unsigned char* image_data="helllo";
+    unsigned char* image_data = stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
+    // unsigned char* image_data="hellllo";
+    // printf("image is %s \n", image_data);
 
-    printf("size of image %zu \n", strlen((char*)image_data));
+    // printf("size of image %zu \n", strlen((char*)image_data));
 
     if (image_data != NULL) {
         puts("Hello");
         
-        printf("size of image %zu", strlen((char*)image_data));
+        // printf("size of image %zu", strlen((char*)image_data));
         image_compression(image_data, root_node_ptr);
     }
     else {
