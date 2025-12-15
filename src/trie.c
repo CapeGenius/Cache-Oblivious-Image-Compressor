@@ -5,6 +5,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+#include "trie.h"
 // C Standard Library - https://www.programiz.com/c-programming/library-function/string.h/strlen
 // geeks for geeks: https://www.geeksforgeeks.org/c/implementation-of-trie-prefix-tree-in-c/
 // Compact Data Structures by Navarro
@@ -13,22 +15,6 @@
 // https://github.com/nothings/stb/blob/master/stb_image.h
 
 #define CHILDREN_SIZE 256
-// created a trie node 
-struct TrieNode {
-    u_int8_t byte;
-    short int phrase_number; 
-    struct TrieNode *parent;
-    struct TrieNode *children[CHILDREN_SIZE];
-}; 
-
-typedef struct TrieNode Node;
-
-// search result struct --> tells whether the byte stream exists along w the node 
-typedef struct SearchResult {
-    Node *searched_node;
-    short int child_exists;
-    unsigned char search_byte;
-} Result;
 
 // creates a node w/ character, parent node, and phrase number
 Node* create_node(unsigned char character, Node* parent_node, short int phrase_number) {
@@ -48,7 +34,7 @@ Node* create_node(unsigned char character, Node* parent_node, short int phrase_n
 // initially thought of recursively inserting nodes --> search for nodes and add nodes for LZ78
 void insert_node(unsigned char byte, Node* node, int phrase_number) {
     // printf("pointer to byte is %p \n", node->children[byte]);
-    node->children[(int)byte] = create_node(byte, node, phrase_number);
+    node->children[byte] = create_node(byte, node, phrase_number);
 }
 
 // created search trie solution
@@ -68,7 +54,6 @@ void search_trie(unsigned char* byte_stream, Node* root, Result* search_result, 
             search_result->search_byte = byte_stream[i];
         }
     }
-
 }
 
 // LZ78 image compression 
@@ -89,65 +74,84 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
     while (end_index < image_size) {
         Result* search_result = (Result*)malloc(sizeof(Result));
 
+        size_t string_size = (end_index-start_index) + 1;
+        
+        unsigned char* byte_stream = (unsigned char* )malloc((string_size)*sizeof(unsigned char));
+        strncpy(byte_stream, image_data+start_index, string_size);
+        search_trie(byte_stream, root_node, search_result, string_size);
+
+        if (search_result->child_exists == 0) {
+            insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
+            
+            ++phrase_number;
+            start_index = end_index + 1;
+            end_index = end_index + 1;
+        }
+        else {
+            // puts("went here instead \n");
+            end_index = end_index + 1;
+        }
+        free(byte_stream);
+        
         // copy string differently based on the size of the string
         // https://stackoverflow.com/questions/8600181/allocate-memory-and-save-string-in-c
-        if (start_index == end_index){
+        // if (start_index == end_index){
 
-            unsigned char * byte_stream = (unsigned char*) malloc(2*sizeof(unsigned char));
-            // puts("memory allocated");
-            strncpy(byte_stream, image_data+start_index, 1);
-            byte_stream[1] = '\0';
-            // search result from searching the trie;
-            search_trie(byte_stream, root_node, search_result, 1);
+        //     unsigned char * byte_stream = (unsigned char*) malloc(2*sizeof(unsigned char));
+        //     // puts("memory allocated");
+        //     strncpy(byte_stream, image_data+start_index, 1);
+        //     byte_stream[1] = '\0';
+        //     // search result from searching the trie;
+        //     search_trie(byte_stream, root_node, search_result, 1);
             
 
-            // puts("what's up");
+        //     // puts("what's up");
 
-            // add a new node if a child is needed to add
-            if (search_result->child_exists == 0) {
-                insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
+        //     // add a new node if a child is needed to add
+        //     if (search_result->child_exists == 0) {
+        //         insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
                 
-                ++phrase_number;
-                start_index = end_index + 1;
-                end_index = end_index + 1;
-            }
-            else {
-                // puts("went here instead \n");
-                end_index = end_index + 1;
-            }
-            free(byte_stream);
-        }
+        //         ++phrase_number;
+        //         start_index = end_index + 1;
+        //         end_index = end_index + 1;
+        //     }
+        //     else {
+        //         // puts("went here instead \n");
+        //         end_index = end_index + 1;
+        //     }
+        //     free(byte_stream);
+        // }
 
 
-        // https://cplusplus.com/reference/cstring/strncpy/
-        // https://forums.raspberrypi.com/viewtopic.php?t=299281
-        // https://stackoverflow.com/questions/6205195/given-a-starting-and-ending-indices-how-can-i-copy-part-of-a-string-in-c
-        else if (end_index > start_index) {
-            // determine length of substring and then allocate memory for that string
-            int string_size = end_index-start_index;
-            unsigned char* byte_stream = (unsigned char* )malloc((string_size+1)*sizeof(unsigned char));
-            // copy new substring into bytestream
-            strncpy(byte_stream, image_data+start_index, string_size);
-            byte_stream[string_size]="\0";
+        // // https://cplusplus.com/reference/cstring/strncpy/
+        // // https://forums.raspberrypi.com/viewtopic.php?t=299281
+        // // https://stackoverflow.com/questions/6205195/given-a-starting-and-ending-indices-how-can-i-copy-part-of-a-string-in-c
+        // else if (end_index > start_index) {
+        //     // determine length of substring and then allocate memory for that string
+        //     int string_size = end_index-start_index;
+        //     unsigned char* byte_stream = (unsigned char* )malloc((string_size+1)*sizeof(unsigned char));
+        //     // copy new substring into bytestream
+        //     strncpy(byte_stream, image_data+start_index, string_size);
+        //     byte_stream[string_size]="\0";
 
-            // find the search result based on the bytestream
-            search_trie(byte_stream, root_node, search_result, string_size);
+        //     // find the search result based on the bytestream
+        //     search_trie(byte_stream, root_node, search_result, string_size);
 
-            // add a new node if a child is needed to add
-            if (search_result->child_exists == 0) {
-                insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
+        //     // add a new node if a child is needed to add
+        //     if (search_result->child_exists == 0) {
+        //         insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
 
-                ++phrase_number;
-                start_index = end_index + 1;
-                end_index = end_index + 1;
-            }
-            else {
+        //         ++phrase_number;
+        //         start_index = end_index + 1;
+        //         end_index = end_index + 1;
+        //     }
+        //     else {
 
-                end_index = end_index + 1;
-            }
+        //         end_index = end_index + 1;
+        //     }
 
-            free(byte_stream);
-        }
+        //     free(byte_stream);
+        // }
         free(search_result);
 
     }
@@ -201,6 +205,7 @@ int create_trie() {
 
 int main() {
     create_trie();
+    return 0;
 }
 
 // used stbi to use stbi_load STBIDEF stbi_uc *stbi_load            
