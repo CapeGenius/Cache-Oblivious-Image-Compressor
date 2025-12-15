@@ -79,14 +79,14 @@ Result* search_trie(unsigned char* byte_stream, Node* root) {
     return search_result;
 }
 
-void image_compression(unsigned char* image_data, Node* root_node) {
+void image_compression(unsigned char* image_data, Node* root_node, size_t image_size) {
     int phrase_number = 0;
     int start_index = 0;
     int end_index = 0;
 
     puts("welcome to image compression \n");
 
-    while (end_index < strlen(image_data)) {
+    while (end_index < image_size) {
         // printf("phrase number: %d \n", phrase_number);
         // printf("end index: %d \n, image size:%zu \n", end_index, strlen(image_data));
         Result* search_result = (Result*)malloc(sizeof(Result));
@@ -160,6 +160,8 @@ void image_compression(unsigned char* image_data, Node* root_node) {
         free(search_result);
 
     }
+    printf("end_index is %d", end_index);
+    printf("the phrase number was %d \n", phrase_number);
     /*
     general algorithm:
         - start at phrase number 0, index 0, end index 
@@ -182,22 +184,25 @@ int create_trie() {
     Node* root_node_ptr = create_node((unsigned char )0, NULL, 0);
      
     // created image data using stb_image.h to find parameters for loading image
-    unsigned char* image_data = stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
+    char* image_data = (char*) stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
     // unsigned char* image_data="hellllo";
     // printf("image is %s \n", image_data);
 
-    // printf("size of image %zu \n", strlen((char*)image_data));
+    printf("size of image %zu \n", (size_t)(sizeof(image_data)/sizeof(u_int8_t)));
+    size_t image_size = (size_t) x_width*y_height*channel_num;
+    printf("The size of the image is %d", image_size);
 
     if (image_data != NULL) {
         puts("Hello");
         
         // printf("size of image %zu", strlen((char*)image_data));
-        image_compression(image_data, root_node_ptr);
+        image_compression(image_data, root_node_ptr, image_size);
     }
     else {
         puts("Hello");
     }
     
+    printf("size of node: %zu", sizeof(Node));
     // create image --> used stb_image.h documentation to find parameters for loading image
     return 0;
 }
