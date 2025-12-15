@@ -59,8 +59,6 @@ void search_trie(unsigned char* byte_stream, Node* root, Result* search_result, 
 
     Node* current_node = root; 
     for (int i = 0; i < string_size; ++i) {
-        // printf("current byte is: %u \n",byte_stream[i]);
-        // printf("the child: %p \n", current_node->children[byte_stream[i]]);
         if (current_node->children[byte_stream[i]] != NULL ) {
             current_node = current_node->children[byte_stream[i]];
         }
@@ -68,15 +66,20 @@ void search_trie(unsigned char* byte_stream, Node* root, Result* search_result, 
             search_result->searched_node = current_node;
             search_result->child_exists = 0; 
             search_result->search_byte = byte_stream[i];
-            // puts("found a node");
-            // return search_result;
         }
     }
 
-    // return search_result;
 }
 
+// LZ78 image compression 
 void image_compression(unsigned char* image_data, Node* root_node, size_t image_size) {
+
+    // general algorithm:
+    // - start at phrase number 0, index 0, end index 
+    // - while loop: (end index < strlen(image_data))
+    //     - start at index 0
+    //     - call search_trie  --> if result->child_exists = 0 --> insert node, increment phrase number using return nodebreak
+    //                         --> if result->child_exists = 1 --> increase end index
     int phrase_number = 0;
     int start_index = 0;
     int end_index = 0;
@@ -84,12 +87,7 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
     // puts("welcome to image compression \n");
 
     while (end_index < image_size) {
-        // printf("phrase number: %d \n", phrase_number);
-        // printf("end index: %d, image size:%zu \n", end_index, strlen(image_data));
         Result* search_result = (Result*)malloc(sizeof(Result));
-        // search_result->search_byte=0;
-        // search_result->searched_node=(Node* ) malloc(sizeof(Node));
-        // search_result->child_exists=1;
 
         // copy string differently based on the size of the string
         // https://stackoverflow.com/questions/8600181/allocate-memory-and-save-string-in-c
@@ -99,9 +97,7 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
             // puts("memory allocated");
             strncpy(byte_stream, image_data+start_index, 1);
             byte_stream[1] = '\0';
-            // printf("byte stream is %s \n", byte_stream);
-            // search result from searching the trie
-            // printf("the pointer is %p \n", (void *)root_node);
+            // search result from searching the trie;
             search_trie(byte_stream, root_node, search_result, 1);
             
 
@@ -140,8 +136,7 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
             // add a new node if a child is needed to add
             if (search_result->child_exists == 0) {
                 insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
-                // printf("the string size %d \n", string_size);
-                
+
                 ++phrase_number;
                 start_index = end_index + 1;
                 end_index = end_index + 1;
@@ -153,20 +148,10 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
 
             free(byte_stream);
         }
-        // puts("---------------------------------------------------------------");
         free(search_result);
 
     }
-    // printf("end_index is %d", end_index);
-    // printf("the phrase number was %d \n", phrase_number);
-    /*
-    general algorithm:
-        - start at phrase number 0, index 0, end index 
-        - while loop: (end index < strlen(image_data))
-            - start at index 0
-            - call search_trie  --> if result->child_exists = 0 --> insert node, increment phrase number using return nodebreak
-                                --> if result->child_exists = 1 --> increase end index
-    */ 
+
 }
 
 void free_trie(Node* node) {
@@ -193,24 +178,21 @@ int create_trie() {
      
     // created image data using stb_image.h to find parameters for loading image
     unsigned char* image_data = (unsigned char*) stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
-    // unsigned char* image_data="hellllo";
-    // printf("image is %s \n", image_data);
 
-    printf("size of image %zu \n", (size_t)(sizeof(image_data)/sizeof(u_int8_t)));
-    size_t image_size = (size_t) x_width*y_height*channel_num;
-    // printf("The size of the image is %zu", image_size);
+    // printf("size of image %zu \n", (size_t)(sizeof(image_data)/sizeof(u_int8_t)));
+    size_t image_size = (size_t) x_width* (size_t) y_height* (size_t) channel_num;
+    printf("The size of the image is %zu \n", image_size);
 
     if (image_data != NULL) {
-        puts("Hello");
         
-        // printf("size of image %zu", strlen((char*)image_data));
         image_compression(image_data, root_node_ptr, image_size);
     }
     else {
-        puts("Hello");
+        puts("Image Data is Null");
     }
     
     printf("size of node: %zu", sizeof(root_node_ptr));
+
     // create image --> used stb_image.h documentation to find parameters for loading image
     free_trie(root_node_ptr);
     free(image_data);
@@ -221,7 +203,7 @@ int main() {
     create_trie();
 }
 
-// used this to use stbi_load STBIDEF stbi_uc *stbi_load            
+// used stbi to use stbi_load STBIDEF stbi_uc *stbi_load            
 //(char const *filename, int *x, int *y, int *channels_in_file, int desired_channels);
 //// Basic usage (see HDR discussion below for HDR usage):
 //    int x,y,n;
