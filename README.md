@@ -32,7 +32,18 @@ https://stackoverflow.com/questions/25360893/convert-char-to-uint8-t
 https://stackoverflow.com/questions/15911714/are-int8-t-and-uint8-t-intended-to-be-char-types
 C Standard Library - https://www.programiz.com/c-programming/library-function/string.h/strlen
 geeks for geeks: https://www.geeksforgeeks.org/c/implementation-of-trie-prefix-tree-in-c/
-Compact Data Structures by Navarro
 https://www.reddit.com/r/C_Programming/comments/sx1xpl/since_the_size_of_datatypes_are_not_fixed_in_c/
 https://pubs.opengroup.org/onlinepubs/007904975/basedefs/stdint.h.html --> need to look into for uint_t
 https://github.com/nothings/stb/blob/master/stb_image.h
+https://math.mit.edu/~goemans/18310S15/lempel-ziv-notes.pdf
+
+Resources for Cache Oblivious Research:
+Compact Data Structures by Navarro
+https://cs.au.dk/~gerth/papers/soda06.pdf
+https://erikdemaine.org/papers/CacheObliviousBTrees_SICOMP/paper.pdf
+https://www.youtube.com/watch?v=K1a2Bk8NrYQ
+https://people.mpi-inf.mpg.de/~umeyer/dfg/swat04.pdf
+https://www.youtube.com/watch?v=C6EWVBNCxsc
+https://www.youtube.com/watch?v=hmReJCupbNU&t=780s
+https://www.arxiv.org/pdf/cs/0211010
+https://dl.acm.org/doi/pdf/10.1145/2903141
