@@ -81,11 +81,11 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
     int start_index = 0;
     int end_index = 0;
 
-    puts("welcome to image compression \n");
+    // puts("welcome to image compression \n");
 
     while (end_index < image_size) {
-        printf("phrase number: %d \n", phrase_number);
-        printf("end index: %d, image size:%zu \n", end_index, strlen(image_data));
+        // printf("phrase number: %d \n", phrase_number);
+        // printf("end index: %d, image size:%zu \n", end_index, strlen(image_data));
         Result* search_result = (Result*)malloc(sizeof(Result));
         // search_result->search_byte=0;
         // search_result->searched_node=(Node* ) malloc(sizeof(Node));
@@ -153,12 +153,12 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
 
             free(byte_stream);
         }
-        puts("---------------------------------------------------------------");
+        // puts("---------------------------------------------------------------");
         free(search_result);
 
     }
-    printf("end_index is %d", end_index);
-    printf("the phrase number was %d \n", phrase_number);
+    // printf("end_index is %d", end_index);
+    // printf("the phrase number was %d \n", phrase_number);
     /*
     general algorithm:
         - start at phrase number 0, index 0, end index 
@@ -185,15 +185,15 @@ void free_trie(Node* node) {
 // https://solarianprogrammer.com/2019/06/10/c-programming-reading-writing-images-stb_image-libraries/
 int create_trie() {
     // load the new image
-    char* image_name = "/home/rohanbendapudi/Cache-Oblivious-Image-Compressor/src/static/cat_image.jpg";
+    char* image_name = "/home/rohanbendapudi/Cache-Oblivious-Image-Compressor/src/static/rohan.jpg";
     int x_width;
     int y_height;
     int channel_num;
     Node* root_node_ptr = create_node((unsigned char )0, NULL, 0);
      
     // created image data using stb_image.h to find parameters for loading image
-    // unsigned char* image_data = (unsigned char*) stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
-    unsigned char* image_data="hellllo";
+    unsigned char* image_data = (unsigned char*) stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
+    // unsigned char* image_data="hellllo";
     // printf("image is %s \n", image_data);
     size_t image_size = strlen(image_data);
 
@@ -214,7 +214,7 @@ int create_trie() {
     printf("size of node: %zu", sizeof(root_node_ptr));
     // create image --> used stb_image.h documentation to find parameters for loading image
     free_trie(root_node_ptr);
-    // free(image_data);
+    free(image_data);
     return 0;
 }
 
