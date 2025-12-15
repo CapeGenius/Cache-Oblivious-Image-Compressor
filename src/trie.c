@@ -52,8 +52,7 @@ void insert_node(unsigned char byte, Node* node, int phrase_number) {
 }
 
 // created search trie solution
-Result* search_trie(unsigned char* byte_stream, Node* root) {
-    Result* search_result = malloc(sizeof(Result));
+void search_trie(unsigned char* byte_stream, Node* root, Result* search_result) {
     search_result->search_byte=0;
     search_result->child_exists=1;
 
@@ -70,13 +69,11 @@ Result* search_trie(unsigned char* byte_stream, Node* root) {
             search_result->child_exists = 0; 
             search_result->search_byte = byte_stream[i];
             // puts("found a node");
-            return search_result;
+            // return search_result;
         }
     }
 
-    search_result->child_exists = 1; 
-
-    return search_result;
+    // return search_result;
 }
 
 void image_compression(unsigned char* image_data, Node* root_node, size_t image_size) {
@@ -87,12 +84,12 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
     puts("welcome to image compression \n");
 
     while (end_index < image_size) {
-        // printf("phrase number: %d \n", phrase_number);
-        // printf("end index: %d \n, image size:%zu \n", end_index, strlen(image_data));
+        printf("phrase number: %d \n", phrase_number);
+        printf("end index: %d, image size:%zu \n", end_index, strlen(image_data));
         Result* search_result = (Result*)malloc(sizeof(Result));
-        search_result->search_byte=0;
-        search_result->searched_node=(Node* ) malloc(sizeof(Node));
-        search_result->child_exists=1;
+        // search_result->search_byte=0;
+        // search_result->searched_node=(Node* ) malloc(sizeof(Node));
+        // search_result->child_exists=1;
 
         // copy string differently based on the size of the string
         // https://stackoverflow.com/questions/8600181/allocate-memory-and-save-string-in-c
@@ -105,7 +102,7 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
             // printf("byte stream is %s \n", byte_stream);
             // search result from searching the trie
             // printf("the pointer is %p \n", (void *)root_node);
-            search_result = search_trie(byte_stream, root_node);
+            search_trie(byte_stream, root_node, search_result);
             
 
             // puts("what's up");
@@ -138,12 +135,12 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
             byte_stream[string_size]="\0";
 
             // find the search result based on the bytestream
-            search_result = search_trie(byte_stream, root_node);
+            search_trie(byte_stream, root_node, search_result);
 
             // add a new node if a child is needed to add
             if (search_result->child_exists == 0) {
                 insert_node(search_result->search_byte, search_result->searched_node, phrase_number);
-                printf("the string size %d \n", string_size);
+                // printf("the string size %d \n", string_size);
                 
                 ++phrase_number;
                 start_index = end_index + 1;
@@ -156,7 +153,7 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
 
             free(byte_stream);
         }
-        // puts("---------------------------------------------------------------");
+        puts("---------------------------------------------------------------");
         free(search_result);
 
     }
@@ -172,6 +169,17 @@ void image_compression(unsigned char* image_data, Node* root_node, size_t image_
     */ 
 }
 
+void free_trie(Node* node) {
+    
+    for(int i = 0; i < 256; ++i) {
+        if (node->children[i] != NULL) {
+            free_trie(node->children[i]);
+        }
+    }
+
+    free(node);
+}
+
 
 // https://stackoverflow.com/questions/14067403/valgrind-invalid-read-of-size-1
 // https://solarianprogrammer.com/2019/06/10/c-programming-reading-writing-images-stb_image-libraries/
@@ -184,13 +192,14 @@ int create_trie() {
     Node* root_node_ptr = create_node((unsigned char )0, NULL, 0);
      
     // created image data using stb_image.h to find parameters for loading image
-    char* image_data = (char*) stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
-    // unsigned char* image_data="hellllo";
+    // unsigned char* image_data = (unsigned char*) stbi_load(image_name,&x_width, &y_height, &channel_num, 0);
+    unsigned char* image_data="hellllo";
     // printf("image is %s \n", image_data);
+    size_t image_size = strlen(image_data);
 
     printf("size of image %zu \n", (size_t)(sizeof(image_data)/sizeof(u_int8_t)));
-    size_t image_size = (size_t) x_width*y_height*channel_num;
-    printf("The size of the image is %d", image_size);
+    // size_t image_size = (size_t) x_width*y_height*channel_num;
+    // printf("The size of the image is %zu", image_size);
 
     if (image_data != NULL) {
         puts("Hello");
@@ -202,8 +211,10 @@ int create_trie() {
         puts("Hello");
     }
     
-    printf("size of node: %zu", sizeof(Node));
+    printf("size of node: %zu", sizeof(root_node_ptr));
     // create image --> used stb_image.h documentation to find parameters for loading image
+    free_trie(root_node_ptr);
+    // free(image_data);
     return 0;
 }
 
