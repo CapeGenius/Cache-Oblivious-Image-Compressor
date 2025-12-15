@@ -16,3 +16,23 @@ Compression ratio : 4.134x
 Time              : 73.918988 s
 ---------------------------
 
+The following includes sources that I referenced throughout this work:
+
+https://pubs.opengroup.org/onlinepubs/007904975/basedefs/stdint.h.html
+https://stackoverflow.com/questions/13590812/c-freeing-structs
+https://stackoverflow.com/questions/29673103/how-to-determine-array-length-of-uint8-t
+https://stackoverflow.com/questions/42836185/will-a-uint8-t-array-be-terminated-by-null-similar-to-a-char-array
+https://stackoverflow.com/questions/50730866/segmentation-fault-with-pointer-array
+https://stackoverflow.com/questions/28585777/invalid-write-of-size-8-valgrind
+https://stackoverflow.com/questions/73436485/malloc-causes-segmentation-fault-when-allocating-a-struct-for-a-linked-list'https://www.reddit.com/r/C_Programming/comments/1b2mj3a/best_practice_on_allocating_memory_for_a_struct/
+https://en.cppreference.com/w/c/string/byte/strncpy
+https://stackoverflow.com/questions/6205195/given-a-starting-and-ending-indices-how-can-i-copy-part-of-a-string-in-c
+https://www.cs.toronto.edu/~krueger/csc209h/tut/gdb_tutorial.html
+https://stackoverflow.com/questions/25360893/convert-char-to-uint8-t
+https://stackoverflow.com/questions/15911714/are-int8-t-and-uint8-t-intended-to-be-char-types
+C Standard Library - https://www.programiz.com/c-programming/library-function/string.h/strlen
+geeks for geeks: https://www.geeksforgeeks.org/c/implementation-of-trie-prefix-tree-in-c/
+Compact Data Structures by Navarro
+https://www.reddit.com/r/C_Programming/comments/sx1xpl/since_the_size_of_datatypes_are_not_fixed_in_c/
+https://pubs.opengroup.org/onlinepubs/007904975/basedefs/stdint.h.html --> need to look into for uint_t
+https://github.com/nothings/stb/blob/master/stb_image.h
