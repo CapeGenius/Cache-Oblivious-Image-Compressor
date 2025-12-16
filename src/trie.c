@@ -1,10 +1,10 @@
-# include <stdio.h> // i/o
-# include <stdlib.h>
-# include <string.h>
-# include <stdint.h>
+#include <stdint.h>
+#include <stdio.h> // i/o
+#include <stdlib.h>
+#include <string.h>
 
-#include "trie.h"
 #include "stb_image.h"
+#include "trie.h"
 
 // C Standard Library - https://www.programiz.com/c-programming/library-function/string.h/strlen
 // geeks for geeks: https://www.geeksforgeeks.org/c/implementation-of-trie-prefix-tree-in-c/
@@ -114,7 +114,7 @@ void free_trie(Node* node) {
 // https://solarianprogrammer.com/2019/06/10/c-programming-reading-writing-images-stb_image-libraries/
 int create_trie() {
     // load the new image
-    char* image_name = "/home/rohanbendapudi/Cache-Oblivious-Image-Compressor/src/static/rohan.jpg";
+    char* image_name = "../src/static/rohan.jpg";
     int x_width;
     int y_height;
     int channel_num;

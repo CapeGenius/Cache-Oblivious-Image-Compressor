@@ -1,6 +1,8 @@
 #include "cache_naive_helpers.h"
+#include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
+
+#define DICT_CAPACITY 1024
 
 // Dictionary entry
 typedef struct {
@@ -12,7 +14,7 @@ size_t lz78_naive_compress(const uint8_t *input, size_t input_size, uint8_t **ou
 {
     // input is a pointer to the original data, and length of the input data
     // allocate dictionary
-    size_t dict_cap = 1024; // max entries for dictionaries
+    size_t dict_cap = DICT_CAPACITY; // max entries for dictionaries
     size_t dict_size = 0; // current number of entries
     DictEntry *dict = malloc(dict_cap * sizeof(DictEntry)); // allocates block of memory to hold 1024 DictEntry structures 
 
