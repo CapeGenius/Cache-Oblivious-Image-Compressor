@@ -1,6 +1,8 @@
 #pragma once
-# include <stdlib.h>
 # include <stdint.h>
+# include <stdlib.h>
+
+
 #define CHILDREN_SIZE 256
 
 struct TrieNode {
@@ -26,8 +28,9 @@ void insert_node(unsigned char byte, Node* node, int phrase_number);
 
 void search_trie(unsigned char* byte_stream, Node* root, Result* search_result, int string_size);
 
-void image_compression(unsigned char* image_data, Node* root_node, size_t image_size);
+int image_compression(unsigned char* image_data, Node* root_node, size_t image_size);
 
 void free_trie(Node* node);
 
 int create_trie();
+
