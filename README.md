@@ -36,6 +36,7 @@ https://www.reddit.com/r/C_Programming/comments/sx1xpl/since_the_size_of_datatyp
 https://pubs.opengroup.org/onlinepubs/007904975/basedefs/stdint.h.html --> need to look into for uint_t
 https://github.com/nothings/stb/blob/master/stb_image.h
 https://math.mit.edu/~goemans/18310S15/lempel-ziv-notes.pdf
+https://forums.raspberrypi.com/viewtopic.php?t=299281
 
 Resources for Cache Oblivious Research:
 Compact Data Structures by Navarro
