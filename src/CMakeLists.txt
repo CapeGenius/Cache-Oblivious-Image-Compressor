@@ -1,18 +1,19 @@
-add_library(image_compressor
-  # cache_naive_helpers.c
-  # cache_naive_helpers.h      
+add_library(cache_naive_helpers cache_naive_helpers.c cache_naive_helpers.h)
+add_library(trie trie.c trie.h)
+add_executable(main main.c)
+add_library(stb_image INTERFACE stb_image.h)
   # controller.c
   # cache_naive_lz.c           
   # main.c
   # cache_oblivious_helpers.c  
-  stb_image.h
+  # stb_image.h
   # cache_oblivious_helpers.h  
   # cache_oblivious_lz.c
-  trie.c
-)
 
 
 
-add_executable(trie trie.c)
-target_link_libraries(trie image_compressor)
-target_link_libraries(image_compressor PRIVATE m)
+# add_executable(main main.c)
+target_link_libraries(main PUBLIC cache_naive_helpers PRIVATE stb_image PRIVATE trie PRIVATE m)
+
+# https://stackoverflow.com/questions/10005982/how-do-you-set-gdb-debug-flag-with-cmake
+# https://stackoverflow.com/questions/60604249/how-to-make-a-header-only-library-with-cmake
