@@ -6,11 +6,12 @@
 # include <time.h> // time functions to help derive metrics
 // image processing library (single header library)
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 // include your helper headers
 #include "cache_naive_helpers.h"
+#include "trie.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // Simple struct to hold timirg + size metrics
 // Creates the CompressionStats type
@@ -41,13 +42,19 @@ static double elapsed_seconds(clock_t start, clock_t end) {
 // -----------------------------------------------
 static uint8_t *load_image_as_bytes(const char *filename, size_t *out_size) {
     int width, height, channels;
+    puts("loading image");
     unsigned char *data = stbi_load(filename, &width, &height, &channels, 0);
+    puts("image loaded");
+
     if (!data) {
         fprintf(stderr, "Error: could not load image '%s'\n", filename);
         return NULL;
     }
 
-    size_t size = (size_t)width * (size_t)height * (size_t)channels;
+    // printf("the width is %d", width);
+
+    int size = width * height * channels;
+    // printf("size is %s", data);
     *out_size = size;
     return (uint8_t *)data;
 }
@@ -89,99 +96,35 @@ static void print_stats(const char *label, const CompressionStats *s) {
 // -----------------------------------------------
 // MAIN
 // -----------------------------------------------
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
 
-    if (argc != 4) {
-        print_usage(argv[0]);
+    if (argc != 2) {
         return EXIT_FAILURE;
     }
 
-    const char *mode        = argv[1];
-    const char *input_image = argv[2];
-    const char *output_base = argv[3];
-
-    // Load image
-    size_t original_size = 0;
-    uint8_t *image_bytes = load_image_as_bytes(input_image, &original_size);
-    if (!image_bytes) return EXIT_FAILURE;
-
-    printf("Loaded '%s' (%zu bytes of pixel data)\n", input_image, original_size);
-
-    int run_naive = (strcmp(mode, "naive") == 0 || strcmp(mode, "both") == 0);
-    int run_co    = (strcmp(mode, "co")    == 0 || strcmp(mode, "both") == 0);
-
-    if (!run_naive && !run_co) {
-        fprintf(stderr, "Error: mode must be 'naive', 'co', or 'both'\n");
-        stbi_image_free(image_bytes);
-        return EXIT_FAILURE;
+    char* compression_type = argv[1];
+    
+    if (strcmp(compression_type, "trie") == 0) {
+        create_trie();
     }
-    // Naive LZ78
-    if (run_naive) {
-        uint8_t *compressed = NULL;
 
-        clock_t start = clock();
-        size_t compressed_size =
-            lz78_naive_compress(image_bytes, original_size, &compressed);
-        clock_t end = clock();
+    if (strcmp(compression_type, "dict") == 0) {
 
-        if (compressed_size == 0 || !compressed) {
-            fprintf(stderr, "Error: naive compression failed\n");
-        } else {
-            CompressionStats stats = {
-                .seconds         = elapsed_seconds(start, end),
-                .original_size   = original_size,
-                .compressed_size = compressed_size
-            };
+        // https://www.ibm.com/docs/en/i/7.5.0?topic=functions-main-function
+        size_t original_size;
+        const char* filename = "/home/rohanbendapudi/Cache-Oblivious-Image-Compressor/src/static/rohan.jpg";
+        uint8_t *image_bytes = load_image_as_bytes(filename, &original_size);
 
-            char out_name[512];
-            snprintf(out_name, sizeof(out_name), "%s.naive.lz78", output_base);
-
-            if (!write_binary_file(out_name, compressed, compressed_size)) {
-                fprintf(stderr, "Warning: failed to write '%s'\n", out_name);
-            } else {
-                printf("Naive compressed output written to '%s'\n", out_name);
-            }
-
-            print_stats("Naive LZ78", &stats);
+        if (image_bytes == NULL) {
+            puts("image is null \n");
         }
+
+        uint8_t *compressed = NULL;
+        printf("original size %zu", original_size);
+
+        // clock_t start = clock();
+        size_t compressed_size = lz78_naive_compress(image_bytes, original_size, &compressed);
+        // clock_t end = clock();
         free(compressed);
     }
-
-    // ---------------------------
-    // CACHE-OBLIVIOUS (later)
-    // ---------------------------
-    // if (run_co) {
-    //     uint8_t *compressed = NULL;
-
-    //     clock_t start = clock();
-    //     size_t compressed_size =
-    //         lz78_cache_oblivious_compress(image_bytes, original_size, &compressed);
-    //     clock_t end = clock();
-
-    //     if (compressed_size == 0 || !compressed) {
-    //         fprintf(stderr, "Error: cache-oblivious compression failed\n");
-    //     } else {
-    //         CompressionStats stats = {
-    //             .seconds         = elapsed_seconds(start, end),
-    //             .original_size   = original_size,
-    //             .compressed_size = compressed_size
-    //         };
-
-    //         char out_name[512];
-    //         snprintf(out_name, sizeof(out_name), "%s.co.lz78", output_base);
-
-    //         if (!write_binary_file(out_name, compressed, compressed_size)) {
-    //             fprintf(stderr,
-    //                     "Warning: could not write cache-oblivious output '%s'\n", out_name);
-    //         } else {
-    //             printf("Cache-oblivious compressed output written to '%s'\n", out_name);
-    //         }
-
-    //         print_stats("Cache-Oblivious LZ78", &stats);
-    //     }
-    //     free(compressed);
-    // }
-
-    stbi_image_free(image_bytes);
-    return EXIT_SUCCESS;
 }
